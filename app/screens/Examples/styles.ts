@@ -1,25 +1,46 @@
 import { StyleSheet } from "react-native";
 
-const styles = StyleSheet.create({
+const blockStyles = StyleSheet.create({
   container: {
-    marginHorizontal: 16,
-    marginVertical: 8,
     borderRadius: 8,
     flex: 1,
     height: 150,
+    marginHorizontal: 16,
+    marginVertical: 8,
     overflow: "hidden",
-  },
-  image: {
-    borderRadius: 8,
-    width: undefined,
-    height: 150,
-    resizeMode: "contain",
   },
   content: {
     ...StyleSheet.absoluteFillObject,
-    padding: 8,
     justifyContent: "flex-end",
+    padding: 8,
+  },
+  image: {
+    borderRadius: 8,
+    height: 150,
+    resizeMode: "contain",
+    width: undefined,
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: "700",
   },
 });
 
-export { styles };
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingVertical: 8,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "700",
+    margin: 16,
+    marginBottom: 0,
+    textAlign: "justify",
+  },
+  subHeading: {
+    margin: 16,
+  },
+});
+
+export { blockStyles, styles };
