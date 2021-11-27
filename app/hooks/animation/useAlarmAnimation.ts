@@ -1,4 +1,3 @@
-import * as Haptics from "expo-haptics";
 import { Dimensions } from "react-native";
 import { PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
 import {
@@ -13,21 +12,21 @@ import {
 } from "react-native-reanimated";
 import { CircleProps, PathProps, PolylineProps } from "react-native-svg";
 
+import { clamp, triggerHaptics } from "./util";
+
 // Type declaration
 type Context = {
   translateX: number;
 };
 
+// Constants
 const { width } = Dimensions.get("window");
 const space = 30;
 const itemWidth = 100;
 const leftClamp = -(width - (1.3 * itemWidth + space)) / 2;
 const rightClamp = (width - (1.3 * itemWidth + space)) / 2;
 
-const triggerHaptics = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-};
-
+// Hook
 function useIncomingCallAnimation() {
   const translateX = useSharedValue(0);
 
@@ -37,7 +36,7 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp, 0, rightClamp],
       [0, 1, 0],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { opacity };
   });
@@ -47,7 +46,7 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp, 0, rightClamp],
       [0, 1, 0],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { opacity };
   });
@@ -57,7 +56,7 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp, 0, rightClamp],
       [0, 1, 0],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { strokeOpacity: opacity };
   });
@@ -67,7 +66,7 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp, 0, rightClamp],
       [0, 1, 0],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { strokeOpacity: opacity };
   });
@@ -77,25 +76,25 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp + 20, 0, rightClamp + 20],
       [19, 15, 19],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     const y2 = interpolate(
       translateX.value,
       [leftClamp + 20, 0, rightClamp + 20],
       [13, 15, 13],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     const x3 = interpolate(
       translateX.value,
       [leftClamp + 20, 0, rightClamp + 20],
       [21, 19, 21],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     const y3 = interpolate(
       translateX.value,
       [leftClamp + 20, 0, rightClamp + 20],
       [29, 17, 29],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     const points = `${x1} 9 15 ${y2} ${x3} ${y3}`;
     return {
@@ -108,7 +107,7 @@ function useIncomingCallAnimation() {
       translateX.value,
       [leftClamp, 0, rightClamp],
       [-460, 0, 260],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { transform: [{ rotate: `${rotate}deg` }] };
   });
@@ -123,21 +122,17 @@ function useIncomingCallAnimation() {
     Context
   >({
     onActive: ({ translationX }, ctx) => {
-      translateX.value = interpolate(
-        ctx.translateX + translationX,
-        [leftClamp, 0, rightClamp],
-        [leftClamp, 0, rightClamp],
-        Extrapolate.CLAMP
-      );
-    },
-    onStart: (_, ctx) => {
-      ctx.translateX = translateX.value;
+      const current = ctx.translateX + translationX;
+      translateX.value = clamp(current, leftClamp, rightClamp);
     },
     onFinish: () => {
       translateX.value = withSpring(0);
       if (translateX.value <= leftClamp || translateX.value >= rightClamp) {
         runOnJS(triggerHaptics)();
       }
+    },
+    onStart: (_, ctx) => {
+      ctx.translateX = translateX.value;
     },
   });
 

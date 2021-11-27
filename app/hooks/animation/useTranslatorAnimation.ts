@@ -8,14 +8,14 @@ import Animated, {
 } from "react-native-reanimated";
 
 export default function useTranslatorAnimation(
-  translateX: Animated.SharedValue<number>
+  translateX: Animated.SharedValue<number>,
 ) {
   const borderRadius = useSharedValue(0);
   const opacity = useSharedValue(1);
   const opacity2 = useSharedValue(1);
-  // We set the initial values of width and width2 to a value larger than 0 so that they
+  // We set the initial values of width and width2 to a value other than 0 so that they
   // do not react to their shared value yet, the reaction we want to trigger on layout is the one
-  //  with translateX
+  // with translateX
   const width = useSharedValue(1);
   const width2 = useSharedValue(1);
 
@@ -53,7 +53,7 @@ export default function useTranslatorAnimation(
       if (width.value === 0) {
         runOnJS(animate2)();
       }
-    }
+    },
   );
 
   useAnimatedReaction(
@@ -62,7 +62,7 @@ export default function useTranslatorAnimation(
       if (width2.value === 0) {
         runOnJS(animate1)();
       }
-    }
+    },
   );
 
   useAnimatedReaction(
@@ -77,23 +77,19 @@ export default function useTranslatorAnimation(
       } else {
         runOnJS(animate1)();
       }
-    }
+    },
   );
 
-  const widthstyle = useAnimatedStyle(() => {
-    return {
-      width: `${width.value}%`,
-      opacity: opacity.value,
-      borderRadius: borderRadius.value,
-    };
-  });
-  const widthstyle2 = useAnimatedStyle(() => {
-    return {
-      width: `${width2.value}%`,
-      opacity: opacity2.value,
-      borderRadius: borderRadius.value,
-    };
-  });
+  const widthstyle = useAnimatedStyle(() => ({
+    borderRadius: borderRadius.value,
+    opacity: opacity.value,
+    width: `${width.value}%`,
+  }));
+  const widthstyle2 = useAnimatedStyle(() => ({
+    borderRadius: borderRadius.value,
+    opacity: opacity2.value,
+    width: `${width2.value}%`,
+  }));
 
   return {
     widthstyle,

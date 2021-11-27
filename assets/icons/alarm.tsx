@@ -2,11 +2,11 @@ import * as React from "react";
 import Animated from "react-native-reanimated";
 import Svg, {
   Circle,
-  Polyline,
-  SvgProps,
   CircleProps,
   Path,
+  Polyline,
   PolylineProps,
+  SvgProps,
 } from "react-native-svg";
 
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
@@ -22,26 +22,26 @@ interface IconProps extends SvgProps {
 function AlarmIcon(props: IconProps) {
   return (
     <Svg
-      width={30}
-      height={30}
       fill="none"
+      height={30}
       stroke="currentColor"
-      strokeWidth={2}
       strokeLinecap="round"
       strokeLinejoin="round"
+      strokeWidth={2}
+      width={30}
       {...props}
     >
       <AnimatedPath
         animatedProps={props.pathAnimatedProps}
-        stroke="#000"
         d="M10 3L5 7M20 3l5 4"
+        stroke="#000"
       />
       <AnimatedCircle
         animatedProps={props.circleAnimatedProps}
-        stroke="#000"
         cx={15}
         cy={15}
         r={10}
+        stroke="#000"
       />
       <AnimatedPolyLine
         animatedProps={props.polyLineAnimatedProps}

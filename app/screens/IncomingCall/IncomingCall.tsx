@@ -23,7 +23,7 @@ const IncomingCall = () => {
     titleStyle,
   } = useIncomingCallAnimation(
     () => console.log("Join"),
-    () => console.log("Hang up")
+    () => console.log("Hang up"),
   );
   const edges = useSafeAreaInsets();
 

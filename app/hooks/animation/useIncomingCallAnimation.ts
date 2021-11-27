@@ -1,6 +1,4 @@
-import * as Haptics from "expo-haptics";
 import { useEffect } from "react";
-import { Dimensions } from "react-native";
 import { PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
 import {
   Easing,
@@ -13,24 +11,22 @@ import {
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { PathProps } from "react-native-svg";
 
+import { clamp, triggerHaptics } from "./util";
+
 // Type declaration
+type Accept = () => void;
 type Context = {
   translateY: number;
 };
-type Accept = () => void;
 type Decline = () => void;
 
 // Constants
-const dimm = Dimensions.get("window");
-
-const triggerHaptics = () => {
-  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-};
+const maxClamp = 60;
+const minClamp = -80;
 
 // Hook
 function useIncomingCallAnimation(accept: Accept, decline: Decline) {
@@ -39,54 +35,56 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
   const repeatTranslate = useSharedValue(0);
   const swipe = useSharedValue(0);
   const textOpacity = useSharedValue(1);
-  const titleTextOpacity = useSharedValue(1);
-  const titleTextScale = useSharedValue(1);
-  const titleTextTranslate = useSharedValue(0);
 
   const doRepeat = () => {
     "worklet";
+
     repeatTranslate.value = withRepeat(
       withTiming(-50, {
         duration: 1500,
       }),
       -1,
-      true
+      true,
     );
-  };
-
-  const animate = () => {
-    gestureTranslate.value = withTiming(
-      0,
-      {
-        duration: 1000,
-        easing: Easing.elastic(1),
-      },
-      (isFinished) => {
-        if (isFinished) {
-          doRepeat();
-        }
-      }
-    );
-    gestureOpacity.value = withTiming(1, { duration: 1000 });
   };
 
   //   Declaring the various animation styles and props
   const acceptStyle = useAnimatedStyle(() => ({ opacity: textOpacity.value }));
 
-  const titleStyle = useAnimatedStyle(() => ({
-    opacity: titleTextOpacity.value,
-    transform: [
-      { scale: titleTextScale.value },
-      { translateY: titleTextTranslate.value },
-    ],
-  }));
+  const titleStyle = useAnimatedStyle(() => {
+    const titleTextOpacity = interpolate(
+      swipe.value,
+      [minClamp, 0, maxClamp],
+      [0, 1, 0],
+      Extrapolate.CLAMP,
+    );
+    const titleTextScale = interpolate(
+      swipe.value,
+      [minClamp, 0, maxClamp],
+      [0.7, 1, 0.7],
+      Extrapolate.CLAMP,
+    );
+    const titleTextTranslate = interpolate(
+      swipe.value,
+      [minClamp, 0, maxClamp],
+      [200, 0, 200],
+      Extrapolate.CLAMP,
+    );
+    return {
+      opacity: titleTextOpacity,
+      transform: [
+        { scale: titleTextScale },
+        { translateY: titleTextTranslate },
+      ],
+    };
+  });
 
   const declineOpacity = useAnimatedStyle(() => {
     const opacity = interpolate(
       repeatTranslate.value,
       [-50, 0],
       [0, 1],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return { opacity };
   });
@@ -102,7 +100,7 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
     const color = interpolateColor(
       swipe.value,
       [-100, 0, 50],
-      ["green", "#3A3B40", "red"]
+      ["green", "#3A3B40", "red"],
     );
     return {
       backgroundColor: color,
@@ -113,7 +111,7 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
     const color = interpolateColor(
       swipe.value,
       [-100, 0, 50],
-      ["white", "green", "white"]
+      ["white", "green", "white"],
     );
     return {
       stroke: color,
@@ -129,7 +127,7 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
       swipe.value,
       [10, 40],
       [0, 135],
-      Extrapolate.CLAMP
+      Extrapolate.CLAMP,
     );
     return {
       transform: [{ rotate: `${rotation}deg` }],
@@ -146,48 +144,25 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
     Context
   >({
     onActive: ({ translationY }, context) => {
-      // repeatTranslate.value = withTiming(repeatTranslate.value);
+      const current = translationY + context.translateY;
       repeatTranslate.value = 0;
       textOpacity.value = withTiming(0);
-      titleTextOpacity.value = interpolate(
-        translationY + context.translateY,
-        [-200, 0, 100],
-        [0, 1, 0],
-        Extrapolate.CLAMP
-      );
-      titleTextScale.value = interpolate(
-        translationY + context.translateY,
-        [-dimm.height / 2, 0, dimm.height / 2],
-        [0.7, 1, 0.7],
-        Extrapolate.CLAMP
-      );
-      titleTextTranslate.value = interpolate(
-        translationY + context.translateY,
-        [-dimm.height / 2, 0, dimm.height / 2],
-        [200, 0, 200],
-        Extrapolate.CLAMP
-      );
-      swipe.value = interpolate(
-        translationY + context.translateY,
-        [-dimm.height / 2, dimm.height / 2],
-        [-150, 150],
-        Extrapolate.CLAMP
-      );
+
+      swipe.value = clamp(current, minClamp, maxClamp);
     },
     onFinish: () => {
-      swipe.value = withSpring(0);
+      swipe.value = withTiming(0, { easing: Easing.inOut(Easing.linear) });
       textOpacity.value = withTiming(1);
-      if (swipe.value < -75) {
+
+      if (swipe.value <= minClamp) {
         runOnJS(triggerHaptics)();
         runOnJS(accept)();
-      } else if (swipe.value >= 50) {
+      } else if (swipe.value >= maxClamp) {
         runOnJS(triggerHaptics)();
         runOnJS(decline)();
       }
-      titleTextOpacity.value = withTiming(1);
-      titleTextScale.value = withTiming(1, { duration: 500 });
-      titleTextTranslate.value = withTiming(0, { duration: 500 });
-      repeatTranslate.value = withTiming(0);
+
+      // repeatTranslate.value = withTiming(0);
       doRepeat();
     },
     onStart: (_, context) => {
@@ -196,9 +171,25 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
   });
 
   useEffect(() => {
+    const animate = () => {
+      gestureTranslate.value = withTiming(
+        0,
+        {
+          duration: 1000,
+          easing: Easing.elastic(1),
+        },
+        (isFinished) => {
+          if (isFinished) {
+            doRepeat();
+          }
+        },
+      );
+      gestureOpacity.value = withTiming(1, { duration: 1000 });
+    };
     // The gesture animation called
     animate();
-  }, [animate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return {
     acceptStyle,

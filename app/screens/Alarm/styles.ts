@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     fontSize: lineHeight,
     fontWeight: "900",
     letterSpacing: 12,
-    lineHeight: lineHeight,
+    lineHeight,
   },
   title: {
     color: "#fff",

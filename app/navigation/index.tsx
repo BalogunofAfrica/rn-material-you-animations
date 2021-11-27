@@ -11,6 +11,36 @@ import { RootStackParamList } from "../../types";
 import AlarmClock from "../screens/Alarm";
 import Examples from "../screens/Examples";
 import IncomingCall from "../screens/IncomingCall";
+import KeyPad from "../screens/KeyPad";
+
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+function RootNavigator() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        component={Examples}
+        name="Examples"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={IncomingCall}
+        name="IncomingCall"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={AlarmClock}
+        name="AlarmClock"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        component={KeyPad}
+        name="KeyPad"
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+}
 
 export default function Navigation({
   colorScheme,
@@ -23,29 +53,5 @@ export default function Navigation({
     >
       <RootNavigator />
     </NavigationContainer>
-  );
-}
-
-const Stack = createNativeStackNavigator<RootStackParamList>();
-
-function RootNavigator() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Examples"
-        component={Examples}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="IncomingCall"
-        component={IncomingCall}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AlarmClock"
-        component={AlarmClock}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
   );
 }

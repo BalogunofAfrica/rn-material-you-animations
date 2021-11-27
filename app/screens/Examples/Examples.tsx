@@ -3,12 +3,12 @@ import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { RootStackScreenProps } from "../../../types";
+import { Text } from "../../components/Themed";
 import { examples } from "./constants";
 import ExampleBlock from "./ExampleBlock";
 import { styles } from "./styles";
-import { Text } from "../../components/Themed";
 
-const Examples = ({ navigation }: RootStackScreenProps<"Examples">) => {
+function Examples({ navigation }: RootStackScreenProps<"Examples">) {
   const insets = useSafeAreaInsets();
   return (
     <ScrollView style={[styles.container, { paddingTop: insets.top }]}>
@@ -25,6 +25,6 @@ const Examples = ({ navigation }: RootStackScreenProps<"Examples">) => {
       ))}
     </ScrollView>
   );
-};
+}
 
 export default Examples;

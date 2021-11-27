@@ -1,12 +1,12 @@
 import Images from "../../../assets/images";
 import { RootStackParamList } from "../../../types";
 
-type examplesType = {
+type ExamplesType = {
   screen: keyof RootStackParamList;
   source: number;
   title: string;
 };
-const examples: examplesType[] = [
+const examples: ExamplesType[] = [
   {
     screen: "IncomingCall",
     source: Images.incoming,
@@ -16,6 +16,11 @@ const examples: examplesType[] = [
     screen: "AlarmClock",
     source: Images.alarm,
     title: "Alarm Clock",
+  },
+  {
+    screen: "KeyPad",
+    source: Images.keypad,
+    title: "Key Pad",
   },
 ];
 
