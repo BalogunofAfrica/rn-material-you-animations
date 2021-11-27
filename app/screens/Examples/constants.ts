@@ -18,9 +18,9 @@ const examples: ExamplesType[] = [
     title: "Alarm Clock",
   },
   {
-    screen: "KeyPad",
-    source: Images.keypad,
-    title: "Key Pad",
+    screen: "NumberPad",
+    source: Images.numberPad,
+    title: "Number Pad",
   },
 ];
 

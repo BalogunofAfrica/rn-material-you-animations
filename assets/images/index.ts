@@ -3,7 +3,7 @@
 const images = {
   alarm: require("./alarm.png") as number,
   incoming: require("./incoming.png") as number,
-  keypad: require("./keypad.png") as number,
+  numberPad: require("./numberPad.png") as number,
 };
 
 export default images;

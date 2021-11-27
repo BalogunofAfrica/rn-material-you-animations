@@ -13,7 +13,7 @@ export type RootStackParamList = {
   AlarmClock: undefined;
   Examples: undefined;
   IncomingCall: undefined;
-  KeyPad: undefined;
+  NumberPad: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

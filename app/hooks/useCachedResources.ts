@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable global-require */
+
 import { FontAwesome } from "@expo/vector-icons";
 import * as Font from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
@@ -13,10 +16,9 @@ export default function useCachedResources() {
         SplashScreen.preventAutoHideAsync();
 
         // Load fonts
-        const MONO = await import("../../assets/fonts/SpaceMono-Regular.ttf");
         await Font.loadAsync({
           ...FontAwesome.font,
-          "space-mono": MONO,
+          "space-mono": require("../../assets/fonts/SpaceMono-Regular.ttf"),
         });
       } catch (e) {
         // We might want to provide this error information to an error reporting service

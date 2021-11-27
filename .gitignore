@@ -1,6 +1,6 @@
 node_modules/
 .expo/
-.vscode/
+.eslintcache
 __snapshots__/
 dist/
 npm-debug.*

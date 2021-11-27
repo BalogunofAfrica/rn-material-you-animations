@@ -12,7 +12,7 @@ interface Props {
   title: string;
 }
 
-export default function ExampleBlock({ onPress, source, title }: Props) {
+function ExampleBlock({ onPress, source, title }: Props) {
   return (
     <RectButton activeOpacity={0.7} onPress={onPress} rippleColor="#D5E3FE">
       <View style={styles.container}>
@@ -24,3 +24,5 @@ export default function ExampleBlock({ onPress, source, title }: Props) {
     </RectButton>
   );
 }
+
+export default ExampleBlock;

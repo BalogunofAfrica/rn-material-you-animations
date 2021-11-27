@@ -8,7 +8,7 @@ import { PhoneIcon } from "../../../assets/icons";
 import { useIncomingCallAnimation } from "../../hooks/animation";
 import { styles } from "./styles";
 
-const IncomingCall = () => {
+function IncomingCall() {
   const {
     acceptStyle,
     declineOpacity,
@@ -28,8 +28,6 @@ const IncomingCall = () => {
   const edges = useSafeAreaInsets();
 
   useEffect(() => {
-    // The gesture animation called
-
     // Vibration settings
     const ONE_SECOND_IN_MS = 1000;
     // Setting the pattern of vibration
@@ -39,9 +37,8 @@ const IncomingCall = () => {
       3 * ONE_SECOND_IN_MS,
     ];
     // Vibration.vibrate(PATTERN, true);
-
     return () => {
-      // Clean-up, stop music and release resources
+      // release resources
       Vibration.cancel();
     };
   }, []);
@@ -94,6 +91,6 @@ const IncomingCall = () => {
       </View>
     </View>
   );
-};
+}
 
 export default IncomingCall;

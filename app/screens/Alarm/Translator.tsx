@@ -8,7 +8,7 @@ import { translatorStyles as styles } from "./styles";
 interface TranslatorProps {
   translateX: Animated.SharedValue<number>;
 }
-export default function Translator({ translateX }: TranslatorProps) {
+function Translator({ translateX }: TranslatorProps) {
   const { widthstyle, widthstyle2 } = useTranslatorAnimation(translateX);
 
   return (
@@ -22,3 +22,5 @@ export default function Translator({ translateX }: TranslatorProps) {
     </View>
   );
 }
+
+export default Translator;

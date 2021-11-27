@@ -11,7 +11,7 @@ import { RootStackParamList } from "../../types";
 import AlarmClock from "../screens/Alarm";
 import Examples from "../screens/Examples";
 import IncomingCall from "../screens/IncomingCall";
-import KeyPad from "../screens/KeyPad";
+import NumberPad from "../screens/NumberPad";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -34,8 +34,8 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        component={KeyPad}
-        name="KeyPad"
+        component={NumberPad}
+        name="NumberPad"
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
