@@ -18,6 +18,7 @@ const styles = StyleSheet.create({
   },
   container: {
     alignItems: "center",
+    backgroundColor: "#222328",
     flex: 1,
     justifyContent: "space-between",
     padding: 8,
@@ -37,9 +38,12 @@ const styles = StyleSheet.create({
   repeatContainer: {
     alignItems: "center",
   },
-  wrapper: {
-    backgroundColor: "#222328",
-    flex: 1,
+  titleText: {
+    color: "#fff",
+    fontSize: 36,
+    fontWeight: "800",
+    marginBottom: 8,
+    textAlign: "center",
   },
 });
 

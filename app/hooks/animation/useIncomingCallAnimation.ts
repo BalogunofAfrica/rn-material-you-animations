@@ -8,9 +8,11 @@ import {
   runOnJS,
   useAnimatedGestureHandler,
   useAnimatedProps,
+  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withRepeat,
+  withSequence,
   withTiming,
 } from "react-native-reanimated";
 import { PathProps } from "react-native-svg";
@@ -35,6 +37,7 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
   const repeatTranslate = useSharedValue(0);
   const swipe = useSharedValue(0);
   const textOpacity = useSharedValue(1);
+  const vibration = useSharedValue(0);
 
   const doRepeat = () => {
     "worklet";
@@ -49,35 +52,9 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
   };
 
   //   Declaring the various animation styles and props
-  const acceptStyle = useAnimatedStyle(() => ({ opacity: textOpacity.value }));
-
-  const titleStyle = useAnimatedStyle(() => {
-    const titleTextOpacity = interpolate(
-      swipe.value,
-      [minClamp, 0, maxClamp],
-      [0, 1, 0],
-      Extrapolate.CLAMP,
-    );
-    const titleTextScale = interpolate(
-      swipe.value,
-      [minClamp, 0, maxClamp],
-      [0.7, 1, 0.7],
-      Extrapolate.CLAMP,
-    );
-    const titleTextTranslate = interpolate(
-      swipe.value,
-      [minClamp, 0, maxClamp],
-      [200, 0, 200],
-      Extrapolate.CLAMP,
-    );
-    return {
-      opacity: titleTextOpacity,
-      transform: [
-        { scale: titleTextScale },
-        { translateY: titleTextTranslate },
-      ],
-    };
-  });
+  const acceptOpacity = useAnimatedStyle(() => ({
+    opacity: textOpacity.value,
+  }));
 
   const declineOpacity = useAnimatedStyle(() => {
     const opacity = interpolate(
@@ -86,32 +63,46 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
       [0, 1],
       Extrapolate.CLAMP,
     );
-    return { opacity };
+    return {
+      opacity: repeatTranslate.value === 0 ? textOpacity.value : opacity,
+    };
   });
-
-  const declineStyle = useAnimatedStyle(() => ({ opacity: textOpacity.value }));
 
   const gestureContainerStyle = useAnimatedStyle(() => ({
     opacity: gestureOpacity.value,
     transform: [{ translateY: gestureTranslate.value }],
   }));
 
-  const iconContainerStyle = useAnimatedStyle(() => {
-    const color = interpolateColor(
+  const headingStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(
       swipe.value,
-      [-100, 0, 50],
-      ["green", "#3A3B40", "red"],
+      [minClamp, 0, maxClamp],
+      [0, 1, 0],
+      Extrapolate.CLAMP,
+    );
+    const scale = interpolate(
+      swipe.value,
+      [minClamp, 0, maxClamp],
+      [0.7, 1, 0.7],
+      Extrapolate.CLAMP,
+    );
+    const translateY = interpolate(
+      swipe.value,
+      [minClamp, 0, maxClamp],
+      [200, 0, 200],
+      Extrapolate.CLAMP,
     );
     return {
-      backgroundColor: color,
+      opacity,
+      transform: [{ scale }, { translateY }],
     };
   });
 
   const iconProps = useAnimatedProps<PathProps>(() => {
     const color = interpolateColor(
       swipe.value,
-      [-100, 0, 50],
-      ["white", "green", "white"],
+      [-50, 0, 50],
+      ["#ffffff", "#00ff00", "#ffffff"],
     );
     return {
       stroke: color,
@@ -130,13 +121,29 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
       Extrapolate.CLAMP,
     );
     return {
-      transform: [{ rotate: `${rotation}deg` }],
+      transform: [
+        {
+          rotate: `${
+            repeatTranslate.value === 0 && swipe.value >= 10
+              ? rotation
+              : vibration.value
+          }deg`,
+        },
+      ],
     };
   });
 
-  const swipeStyle = useAnimatedStyle(() => ({
-    transform: [{ translateY: swipe.value }],
-  }));
+  const swipeStyle = useAnimatedStyle(() => {
+    const backgroundColor = interpolateColor(
+      swipe.value,
+      [-50, 0, 50],
+      ["#00ff00", "#3A3B40", "#ff0000"],
+    );
+    return {
+      backgroundColor,
+      transform: [{ translateY: swipe.value }],
+    };
+  });
 
   //   Handling gesture event
   const gestureHandler = useAnimatedGestureHandler<
@@ -144,11 +151,10 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
     Context
   >({
     onActive: ({ translationY }, context) => {
-      const current = translationY + context.translateY;
       repeatTranslate.value = 0;
-      textOpacity.value = withTiming(0);
-
+      const current = translationY + context.translateY;
       swipe.value = clamp(current, minClamp, maxClamp);
+      textOpacity.value = withTiming(0);
     },
     onFinish: () => {
       swipe.value = withTiming(0, { easing: Easing.inOut(Easing.linear) });
@@ -162,7 +168,6 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
         runOnJS(decline)();
       }
 
-      // repeatTranslate.value = withTiming(0);
       doRepeat();
     },
     onStart: (_, context) => {
@@ -170,39 +175,44 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
     },
   });
 
+  //   Handling reactions and effects
+  useAnimatedReaction(
+    () => repeatTranslate.value,
+    (prep) => {
+      if (prep === -50) {
+        vibration.value = withSequence(
+          withTiming(-8, { duration: 25 }),
+          withRepeat(withTiming(8, { duration: 50 }), 12, true),
+          withTiming(0, { duration: 25 }),
+        );
+      }
+    },
+  );
+
   useEffect(() => {
-    const animate = () => {
-      gestureTranslate.value = withTiming(
-        0,
-        {
-          duration: 1000,
-          easing: Easing.elastic(1),
-        },
-        (isFinished) => {
-          if (isFinished) {
-            doRepeat();
-          }
-        },
-      );
-      gestureOpacity.value = withTiming(1, { duration: 1000 });
-    };
-    // The gesture animation called
-    animate();
+    gestureTranslate.value = withTiming(
+      0,
+      { duration: 1000, easing: Easing.elastic(1) },
+      (isFinished) => {
+        if (isFinished) {
+          doRepeat();
+        }
+      },
+    );
+    gestureOpacity.value = withTiming(1, { duration: 1000 });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {
-    acceptStyle,
+    acceptOpacity,
     declineOpacity,
-    declineStyle,
     gestureContainerStyle,
     gestureHandler,
-    iconContainerStyle,
+    headingStyle,
     iconProps,
     repeatTranslateStyle,
     rotationStyle,
     swipeStyle,
-    titleStyle,
   };
 }
 

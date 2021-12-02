@@ -14,7 +14,7 @@ interface Props {
 
 function ExampleBlock({ onPress, source, title }: Props) {
   return (
-    <RectButton activeOpacity={0.7} onPress={onPress} rippleColor="#D5E3FE">
+    <RectButton activeOpacity={0.7} onPress={onPress} rippleColor="#587ABE">
       <View style={styles.container}>
         <Animated.Image source={source} style={styles.image} />
         <View style={styles.content}>

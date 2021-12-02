@@ -8,6 +8,7 @@
     "icon": "./assets/images/logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "primaryColor": "#00FF00",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "cover",
@@ -16,16 +17,14 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo.png",
-        "backgroundColor": "#449A6A"
+        "backgroundColor": "#00FF00"
       }
     },
     "web": {

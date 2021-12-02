@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { Text, Vibration, View } from "react-native";
+import React from "react";
+import { Text, View } from "react-native";
 import { PanGestureHandler } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -9,86 +9,50 @@ import { useIncomingCallAnimation } from "../../hooks/animation";
 import { styles } from "./styles";
 
 function IncomingCall() {
+  const edges = useSafeAreaInsets();
   const {
-    acceptStyle,
+    acceptOpacity,
     declineOpacity,
-    declineStyle,
     gestureContainerStyle,
     gestureHandler,
-    iconContainerStyle,
+    headingStyle,
     iconProps,
     repeatTranslateStyle,
     rotationStyle,
     swipeStyle,
-    titleStyle,
   } = useIncomingCallAnimation(
-    () => console.log("Join"),
-    () => console.log("Hang up"),
+    () => console.log("Accepting call"),
+    () => console.log("Rejecting call"),
   );
-  const edges = useSafeAreaInsets();
-
-  useEffect(() => {
-    // Vibration settings
-    const ONE_SECOND_IN_MS = 1000;
-    // Setting the pattern of vibration
-    const PATTERN = [
-      1 * ONE_SECOND_IN_MS,
-      2 * ONE_SECOND_IN_MS,
-      3 * ONE_SECOND_IN_MS,
-    ];
-    // Vibration.vibrate(PATTERN, true);
-    return () => {
-      // release resources
-      Vibration.cancel();
-    };
-  }, []);
 
   return (
-    <View style={[styles.wrapper, { paddingTop: edges.top }]}>
-      <View style={styles.container}>
-        <Animated.View style={titleStyle}>
-          <Text style={styles.callingText}>Call from</Text>
-          <Text
-            style={[styles.callingText, { fontSize: 36, fontWeight: "800" }]}
-          >
-            Tech Support NG
-          </Text>
-          <Text style={styles.callingText}>Mobile +234 00 000 000</Text>
-        </Animated.View>
-        <Animated.View style={[styles.actionsContainer, gestureContainerStyle]}>
-          <PanGestureHandler
-            activeOffsetY={[0, 0]}
-            onGestureEvent={gestureHandler}
-          >
-            <Animated.View
-              style={[styles.repeatContainer, repeatTranslateStyle]}
-            >
-              <Animated.View style={acceptStyle}>
-                <Text style={styles.acceptText}>Swipe up to answer...</Text>
-              </Animated.View>
-              <Animated.View style={swipeStyle}>
-                <Animated.View
-                  style={[styles.iconContainer, iconContainerStyle]}
-                >
-                  <Animated.View style={rotationStyle}>
-                    <PhoneIcon
-                      animatedProps={iconProps}
-                      height={24}
-                      width={24}
-                    />
-                  </Animated.View>
-                </Animated.View>
-              </Animated.View>
-            </Animated.View>
-          </PanGestureHandler>
-
-          <Animated.View style={[declineStyle]}>
-            <Animated.View style={[declineOpacity]}>
-              <Text style={styles.declineText}>Swipe down to decline...</Text>
+    <View style={[styles.container, { paddingTop: edges.top }]}>
+      <Animated.View style={headingStyle}>
+        <Text style={styles.callingText}>Call from</Text>
+        <Text style={styles.titleText}>Tech Support NG</Text>
+        <Text style={styles.callingText}>Mobile +234 00 000 000</Text>
+      </Animated.View>
+      <Animated.View style={[styles.actionsContainer, gestureContainerStyle]}>
+        <PanGestureHandler
+          activeOffsetY={[0, 0]}
+          onGestureEvent={gestureHandler}
+        >
+          <Animated.View style={[styles.repeatContainer, repeatTranslateStyle]}>
+            <Animated.Text style={[styles.acceptText, acceptOpacity]}>
+              Swipe up to answer...
+            </Animated.Text>
+            <Animated.View style={[styles.iconContainer, swipeStyle]}>
+              <PhoneIcon
+                animatedProps={iconProps}
+                rotationStyle={rotationStyle}
+              />
             </Animated.View>
           </Animated.View>
-        </Animated.View>
-      </View>
+        </PanGestureHandler>
+        <Animated.Text style={[styles.declineText, declineOpacity]}>
+          Swipe down to decline...
+        </Animated.Text>
+      </Animated.View>
     </View>
   );
 }

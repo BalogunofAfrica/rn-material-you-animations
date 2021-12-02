@@ -3,9 +3,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 declare global {
   namespace ReactNavigation {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    type RootParamList = RootStackParamList;
+    type RootParamListTypes = RootStackParamList;
   }
 }
 
