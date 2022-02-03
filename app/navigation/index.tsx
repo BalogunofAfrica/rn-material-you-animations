@@ -17,27 +17,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function RootNavigator() {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        component={Examples}
-        name="Examples"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={IncomingCall}
-        name="IncomingCall"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={AlarmClock}
-        name="AlarmClock"
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        component={NumberPad}
-        name="NumberPad"
-        options={{ headerShown: false }}
-      />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen component={Examples} name="Examples" />
+      <Stack.Screen component={IncomingCall} name="IncomingCall" />
+      <Stack.Screen component={AlarmClock} name="AlarmClock" />
+      <Stack.Screen component={NumberPad} name="NumberPad" />
     </Stack.Navigator>
   );
 }
@@ -45,7 +29,7 @@ function RootNavigator() {
 export default function Navigation({
   colorScheme,
 }: {
-  colorScheme: ColorSchemeName;
+  colorScheme: NonNullable<ColorSchemeName>;
 }) {
   return (
     <NavigationContainer

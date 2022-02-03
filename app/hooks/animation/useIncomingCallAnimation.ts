@@ -1,12 +1,11 @@
 import { useEffect } from "react";
-import { PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
+import { Gesture } from "react-native-gesture-handler";
 import {
   Easing,
   Extrapolate,
   interpolate,
   interpolateColor,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -21,9 +20,6 @@ import { clamp, triggerHaptics } from "./util";
 
 // Type declaration
 type Accept = () => void;
-type Context = {
-  translateY: number;
-};
 type Decline = () => void;
 
 // Constants
@@ -32,6 +28,7 @@ const minClamp = -80;
 
 // Hook
 function useIncomingCallAnimation(accept: Accept, decline: Decline) {
+  const context = useSharedValue({ translateY: 0 });
   const gestureOpacity = useSharedValue(0);
   const gestureTranslate = useSharedValue(100);
   const repeatTranslate = useSharedValue(0);
@@ -146,17 +143,17 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
   });
 
   //   Handling gesture event
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    Context
-  >({
-    onActive: ({ translationY }, context) => {
+  const gestureHandler = Gesture.Pan()
+    .onStart(() => {
+      context.value.translateY = swipe.value;
+    })
+    .onUpdate(({ translationY }) => {
       repeatTranslate.value = 0;
-      const current = translationY + context.translateY;
+      const current = translationY + context.value.translateY;
       swipe.value = clamp(current, minClamp, maxClamp);
       textOpacity.value = withTiming(0);
-    },
-    onFinish: () => {
+    })
+    .onEnd(() => {
       swipe.value = withTiming(0, { easing: Easing.inOut(Easing.linear) });
       textOpacity.value = withTiming(1);
 
@@ -169,11 +166,7 @@ function useIncomingCallAnimation(accept: Accept, decline: Decline) {
       }
 
       doRepeat();
-    },
-    onStart: (_, context) => {
-      context.translateY = swipe.value;
-    },
-  });
+    });
 
   //   Handling reactions and effects
   useAnimatedReaction(

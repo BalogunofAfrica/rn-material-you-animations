@@ -1,5 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { useCachedResources, useColorScheme } from "./app/hooks";
@@ -14,8 +15,10 @@ export default function App() {
   }
   return (
     <SafeAreaProvider>
-      <Navigation colorScheme={colorScheme} />
-      <StatusBar />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Navigation colorScheme={colorScheme} />
+        <StatusBar />
+      </GestureHandlerRootView>
     </SafeAreaProvider>
   );
 }

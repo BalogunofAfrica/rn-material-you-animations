@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, View } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -33,10 +33,7 @@ function IncomingCall() {
         <Text style={styles.callingText}>Mobile +234 00 000 000</Text>
       </Animated.View>
       <Animated.View style={[styles.actionsContainer, gestureContainerStyle]}>
-        <PanGestureHandler
-          activeOffsetY={[0, 0]}
-          onGestureEvent={gestureHandler}
-        >
+        <GestureDetector gesture={gestureHandler}>
           <Animated.View style={[styles.repeatContainer, repeatTranslateStyle]}>
             <Animated.Text style={[styles.acceptText, acceptOpacity]}>
               Swipe up to answer...
@@ -48,7 +45,7 @@ function IncomingCall() {
               />
             </Animated.View>
           </Animated.View>
-        </PanGestureHandler>
+        </GestureDetector>
         <Animated.Text style={[styles.declineText, declineOpacity]}>
           Swipe down to decline...
         </Animated.Text>

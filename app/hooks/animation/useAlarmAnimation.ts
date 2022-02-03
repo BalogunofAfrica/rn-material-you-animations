@@ -1,10 +1,9 @@
 import { Dimensions } from "react-native";
-import { PanGestureHandlerGestureEvent } from "react-native-gesture-handler";
+import { Gesture } from "react-native-gesture-handler";
 import {
   Extrapolate,
   interpolate,
   runOnJS,
-  useAnimatedGestureHandler,
   useAnimatedProps,
   useAnimatedStyle,
   useSharedValue,
@@ -13,11 +12,6 @@ import {
 import { CircleProps, PathProps, PolylineProps } from "react-native-svg";
 
 import { clamp, triggerHaptics } from "./util";
-
-// Type declaration
-type Context = {
-  translateX: number;
-};
 
 // Constants
 const { width } = Dimensions.get("window");
@@ -28,9 +22,10 @@ const rightClamp = (width - (1.3 * itemWidth + space)) / 2;
 
 // Hook
 function useIncomingCallAnimation() {
+  const context = useSharedValue({ translateX: 0 });
   const translateX = useSharedValue(0);
 
-  //   Declaring the various animation styles and props
+  // Declaring the various animation styles and props
   const actionStyle = useAnimatedStyle(() => {
     const opacity = interpolate(
       translateX.value,
@@ -116,25 +111,21 @@ function useIncomingCallAnimation() {
     transform: [{ translateX: translateX.value }],
   }));
 
-  //   Handling gesture event
-  const gestureHandler = useAnimatedGestureHandler<
-    PanGestureHandlerGestureEvent,
-    Context
-  >({
-    onActive: ({ translationX }, ctx) => {
-      const current = ctx.translateX + translationX;
+  // Handling gesture event
+  const gestureHandler = Gesture.Pan()
+    .onStart(() => {
+      context.value.translateX = translateX.value;
+    })
+    .onUpdate(({ translationX }) => {
+      const current = context.value.translateX + translationX;
       translateX.value = clamp(current, leftClamp, rightClamp);
-    },
-    onFinish: () => {
+    })
+    .onEnd(() => {
       translateX.value = withSpring(0);
       if (translateX.value <= leftClamp || translateX.value >= rightClamp) {
         runOnJS(triggerHaptics)();
       }
-    },
-    onStart: (_, ctx) => {
-      ctx.translateX = translateX.value;
-    },
-  });
+    });
 
   return {
     actionStyle,

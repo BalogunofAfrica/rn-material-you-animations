@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { PanGestureHandler } from "react-native-gesture-handler";
+import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
 
 import { AlarmIcon } from "../../../assets/icons";
@@ -34,10 +34,7 @@ function AlarmClock() {
           <AnimatedText animatedStyle={actionStyle2} style={styles.snoozeText}>
             Snooze
           </AnimatedText>
-          <PanGestureHandler
-            activeOffsetY={[0, 0]}
-            onGestureEvent={gestureHandler}
-          >
+          <GestureDetector gesture={gestureHandler}>
             <Animated.View style={[styles.gestureContainer, swipeStyle]}>
               <Animated.View style={rotateStyle}>
                 <AlarmIcon
@@ -47,7 +44,7 @@ function AlarmClock() {
                 />
               </Animated.View>
             </Animated.View>
-          </PanGestureHandler>
+          </GestureDetector>
           <AnimatedText animatedStyle={actionStyle} style={styles.stopText}>
             Stop
           </AnimatedText>
